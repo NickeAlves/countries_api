@@ -1,6 +1,8 @@
 package com.countries.service;
 
 import com.countries.dto.response.CountryDataResponseDTO;
+import com.countries.exception.CountryNotFoundException;
+import com.countries.exception.ExternalServiceException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +34,7 @@ public class CountryService {
             return objectMapper.readValue(httpResponse.body(), new TypeReference<>() {
             });
         } catch (IOException | InterruptedException exception) {
-            throw new RuntimeException("Error while search all countries: " + exception.getMessage());
+            throw new ExternalServiceException("Error fetching all countries: " , exception);
         }
     }
 
@@ -45,10 +47,14 @@ public class CountryService {
 
             HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
+            if (httpResponse.statusCode() == 404) {
+                throw new CountryNotFoundException("No countries found in region: " + region);
+            }
+
             return objectMapper.readValue(httpResponse.body(), new TypeReference<>() {
             });
         } catch (IOException | InterruptedException exception) {
-            throw new RuntimeException("Error while search countries by region: " + exception.getMessage());
+            throw new ExternalServiceException("Error fetching countries by region: " , exception);
         }
     }
 
@@ -61,10 +67,14 @@ public class CountryService {
 
             HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
+            if (httpResponse.statusCode() == 404) {
+                throw new CountryNotFoundException("Country not found: " + countryName);
+            }
+
             return objectMapper.readValue(httpResponse.body(), new TypeReference<List<CountryDataResponseDTO>>() {
             });
         } catch (IOException | InterruptedException exception) {
-            throw new RuntimeException("Error while search country by name: " + exception.getMessage());
+            throw new ExternalServiceException("Error while search country by name: " , exception);
         }
     }
 }
