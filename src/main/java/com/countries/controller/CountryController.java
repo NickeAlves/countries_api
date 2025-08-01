@@ -1,6 +1,6 @@
 package com.countries.controller;
 
-import com.countries.dto.response.CountryResponseDTO;
+import com.countries.dto.response.CountryDataResponseDTO;
 import com.countries.service.CountryService;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,12 +16,17 @@ public class CountryController {
     }
 
     @GetMapping("/all")
-    public List<CountryResponseDTO> getAllCountries() {
+    public List<CountryDataResponseDTO> getAllCountries() {
         return countryService.findAllCountries();
     }
 
     @GetMapping("/region/{region}")
-    public List<CountryResponseDTO> getCountriesByRegion(@PathVariable String region) {
+    public List<CountryDataResponseDTO> getCountriesByRegion(@PathVariable String region) {
         return countryService.findCountriesByRegion(region);
+    }
+
+    @GetMapping("/name/{countryName}")
+    public List<CountryDataResponseDTO> getCountryByName(@PathVariable String countryName) {
+        return countryService.findCountryByName(countryName);
     }
 }

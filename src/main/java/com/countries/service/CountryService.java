@@ -1,8 +1,9 @@
 package com.countries.service;
 
-import com.countries.dto.response.CountryResponseDTO;
+import com.countries.dto.response.CountryDataResponseDTO;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -14,10 +15,12 @@ import java.util.List;
 
 @Service
 public class CountryService {
-    private static final String URL = "https://restcountries.com/v3.1";
+    @Value("${REST_URL}")
+    private String URL;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public List<CountryResponseDTO> findAllCountries() {
+    public List<CountryDataResponseDTO> findAllCountries() {
         try {
             HttpClient httpClient = HttpClient.newHttpClient();
             HttpRequest httpRequest = HttpRequest.newBuilder()
@@ -26,13 +29,14 @@ public class CountryService {
 
             HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
-            return objectMapper.readValue(httpResponse.body(), new TypeReference<>() {});
+            return objectMapper.readValue(httpResponse.body(), new TypeReference<>() {
+            });
         } catch (IOException | InterruptedException exception) {
             throw new RuntimeException("Error while search all countries: " + exception.getMessage());
         }
     }
 
-    public List<CountryResponseDTO> findCountriesByRegion(String region) {
+    public List<CountryDataResponseDTO> findCountriesByRegion(String region) {
         try {
             HttpClient httpClient = HttpClient.newHttpClient();
             HttpRequest httpRequest = HttpRequest.newBuilder()
@@ -41,9 +45,26 @@ public class CountryService {
 
             HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
-            return objectMapper.readValue(httpResponse.body(), new TypeReference<>() {});
+            return objectMapper.readValue(httpResponse.body(), new TypeReference<>() {
+            });
         } catch (IOException | InterruptedException exception) {
             throw new RuntimeException("Error while search countries by region: " + exception.getMessage());
+        }
+    }
+
+    public List<CountryDataResponseDTO> findCountryByName(String countryName) {
+        try {
+            HttpClient httpClient = HttpClient.newHttpClient();
+            HttpRequest httpRequest = HttpRequest.newBuilder()
+                    .uri(URI.create(URL + "/name/" + countryName))
+                    .GET().build();
+
+            HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+
+            return objectMapper.readValue(httpResponse.body(), new TypeReference<List<CountryDataResponseDTO>>() {
+            });
+        } catch (IOException | InterruptedException exception) {
+            throw new RuntimeException("Error while search country by name: " + exception.getMessage());
         }
     }
 }
