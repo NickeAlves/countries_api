@@ -2,9 +2,7 @@ package com.countries.controller;
 
 import com.countries.dto.response.CountryResponseDTO;
 import com.countries.service.CountryService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,5 +18,10 @@ public class CountryController {
     @GetMapping("/all")
     public List<CountryResponseDTO> getAllCountries() {
         return countryService.findAllCountries();
+    }
+
+    @GetMapping("/region/{region}")
+    public List<CountryResponseDTO> getCountriesByRegion(@PathVariable String region) {
+        return countryService.findCountriesByRegion(region);
     }
 }

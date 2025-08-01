@@ -31,4 +31,19 @@ public class CountryService {
             throw new RuntimeException("Error while search all countries: " + exception.getMessage());
         }
     }
+
+    public List<CountryResponseDTO> findCountriesByRegion(String region) {
+        try {
+            HttpClient httpClient = HttpClient.newHttpClient();
+            HttpRequest httpRequest = HttpRequest.newBuilder()
+                    .uri(URI.create(URL + "/region/" + region))
+                    .GET().build();
+
+            HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+
+            return objectMapper.readValue(httpResponse.body(), new TypeReference<>() {});
+        } catch (IOException | InterruptedException exception) {
+            throw new RuntimeException("Error while search countries by region: " + exception.getMessage());
+        }
+    }
 }
